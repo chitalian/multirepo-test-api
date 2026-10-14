@@ -1,0 +1,14 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "API",
+  "colors": { "primary": "#16A34A" },
+  "variables": { "apiVersion": "2026-10" },
+  "navigation": {
+    "groups": [
+      { "group": "Get started", "pages": ["introduction"] },
+      { "group": "Reference", "pages": ["reference/users", "reference/orders"] }
+    ]
+  },
+  "redirects": [{ "source": "/old-users", "destination": "/reference/users" }]
+}
