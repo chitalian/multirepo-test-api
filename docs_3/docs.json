@@ -1,0 +1,11 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "API operations",
+  "colors": { "primary": "#4F46E5" },
+  "navigation": {
+    "groups": [
+      { "group": "Welcome", "pages": ["sample"] }
+    ]
+  }
+}
