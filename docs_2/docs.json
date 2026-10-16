@@ -1,0 +1,13 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "API operations",
+  "colors": { "primary": "#4F46E5" },
+  "navigation": {
+    "groups": [
+      { "group": "Running the API", "pages": ["overview", "local-development", "configuration"] },
+      { "group": "Contributing", "pages": ["add-an-endpoint"] },
+      { "group": "Runbooks", "pages": ["runbooks/auth-failures", "runbooks/rotate-api-key"] }
+    ]
+  }
+}
