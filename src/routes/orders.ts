@@ -1,0 +1,51 @@
+import { randomUUID } from 'node:crypto'
+import { HttpError, type Route } from '../http.js'
+import { paginate } from '../pagination.js'
+import { orders, prices, users } from '../store.js'
+import type { Order, OrderItem, OrderStatus } from '../types.js'
+
+const STATUSES: OrderStatus[] = ['pending', 'paid', 'shipped']
+
+function parseItems(value: unknown): OrderItem[] {
+  if (!Array.isArray(value) || value.length === 0) throw new HttpError(400, 'items must be a non-empty array')
+  return value.map((item, i) => {
+    const { sku, quantity } = (item ?? {}) as Record<string, unknown>
+    if (typeof sku !== 'string' || !(sku in prices)) throw new HttpError(400, `items[${i}].sku is not a known SKU`)
+    if (!Number.isInteger(quantity) || (quantity as number) < 1) throw new HttpError(400, `items[${i}].quantity must be a positive integer`)
+    return { sku, quantity: quantity as number }
+  })
+}
+
+export const orderRoutes: Route[] = [
+  {
+    method: 'GET',
+    path: '/v1/orders',
+    handler: async (req) => {
+      const status = req.query.get('status')
+      if (status !== null && !STATUSES.includes(status as OrderStatus)) {
+        throw new HttpError(400, `status must be one of ${STATUSES.join(', ')}`)
+      }
+      const matching = status ? orders.filter((o) => o.status === status) : orders
+      return { status: 200, body: paginate(matching, req) }
+    },
+  },
+  {
+    method: 'POST',
+    path: '/v1/orders',
+    handler: async (req) => {
+      const { userId, items } = (req.body ?? {}) as Record<string, unknown>
+      if (typeof userId !== 'string' || !users.some((u) => u.id === userId)) throw new HttpError(400, 'userId must reference an existing user')
+      const parsed = parseItems(items)
+      const order: Order = {
+        id: `ord_${randomUUID().slice(0, 8)}`,
+        userId,
+        status: 'pending',
+        items: parsed,
+        totalCents: parsed.reduce((sum, item) => sum + prices[item.sku] * item.quantity, 0),
+        createdAt: new Date().toISOString(),
+      }
+      orders.push(order)
+      return { status: 201, body: order }
+    },
+  },
+]
