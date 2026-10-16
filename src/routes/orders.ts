@@ -4,7 +4,7 @@ import { paginate } from '../pagination.js'
 import { orders, prices, users } from '../store.js'
 import type { Order, OrderItem, OrderStatus } from '../types.js'
 
-const STATUSES: OrderStatus[] = ['pending', 'paid', 'shipped']
+const STATUSES: OrderStatus[] = ['pending', 'paid', 'shipped', 'cancelled']
 
 function parseItems(value: unknown): OrderItem[] {
   if (!Array.isArray(value) || value.length === 0) throw new HttpError(400, 'items must be a non-empty array')
@@ -43,9 +43,24 @@ export const orderRoutes: Route[] = [
         items: parsed,
         totalCents: parsed.reduce((sum, item) => sum + prices[item.sku] * item.quantity, 0),
         createdAt: new Date().toISOString(),
+        cancelledAt: null,
       }
       orders.push(order)
       return { status: 201, body: order }
+    },
+  },
+  {
+    method: 'POST',
+    path: '/v1/orders/:id/cancel',
+    handler: async (req) => {
+      const order = orders.find((o) => o.id === req.params.id)
+      if (!order) throw new HttpError(404, `Order ${req.params.id} not found`)
+      if (order.status === 'shipped') throw new HttpError(409, 'Shipped orders cannot be cancelled')
+      if (order.status !== 'cancelled') {
+        order.status = 'cancelled'
+        order.cancelledAt = new Date().toISOString()
+      }
+      return { status: 200, body: order }
     },
   },
 ]

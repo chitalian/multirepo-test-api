@@ -1,7 +1,7 @@
 import { HttpError, type Request } from './http.js'
 import type { Page } from './types.js'
 
-export const DEFAULT_LIMIT = 20
+export const DEFAULT_LIMIT = 50
 export const MAX_LIMIT = 100
 
 export function readLimit(req: Request): number {

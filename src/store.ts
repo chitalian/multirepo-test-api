@@ -13,6 +13,7 @@ export const orders: Order[] = [
     items: [{ sku: 'WIDGET-1', quantity: 2 }],
     totalCents: 4000,
     createdAt: '2026-03-01T09:00:00Z',
+    cancelledAt: null,
   },
 ]
 

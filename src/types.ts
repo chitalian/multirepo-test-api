@@ -5,7 +5,7 @@ export type User = {
   createdAt: string
 }
 
-export type OrderStatus = 'pending' | 'paid' | 'shipped'
+export type OrderStatus = 'pending' | 'paid' | 'shipped' | 'cancelled'
 
 export type OrderItem = {
   sku: string
@@ -19,6 +19,7 @@ export type Order = {
   items: OrderItem[]
   totalCents: number
   createdAt: string
+  cancelledAt: string | null
 }
 
 export type Page<T> = {
