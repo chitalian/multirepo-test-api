@@ -30,6 +30,15 @@ export const orderRoutes: Route[] = [
     },
   },
   {
+    method: 'GET',
+    path: '/v1/orders/:id',
+    handler: async (req) => {
+      const order = orders.find((o) => o.id === req.params.id)
+      if (!order) throw new HttpError(404, `Order ${req.params.id} not found`)
+      return { status: 200, body: order }
+    },
+  },
+  {
     method: 'POST',
     path: '/v1/orders',
     handler: async (req) => {
